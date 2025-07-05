@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: WashingPistol
   m_EditorClassIdentifier: 
   weaponName: Washing Pistol
-  fireMode: 0
+  fireMode: 1
   damage: 15
   fireRate: 0.2
   shootDistance: 10

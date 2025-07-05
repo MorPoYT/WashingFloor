@@ -8,12 +8,12 @@ public class Weapon : MonoBehaviour
 {
     public WeaponData weaponData;
     public Camera playerCamera;
+    public Animator weaponAnimator; // Добавляем Animator
 
     private int currentAmmo;
     private int totalAmmo;
     private bool isReloading;
     private float lastFireTime;
-
 
     private void OnEnable()
     {
@@ -56,7 +56,10 @@ public class Weapon : MonoBehaviour
 
         if (weaponData.fireMode == FireMode.Melee)
         {
-            // МЕЛИЕ
+            // Проигрываем анимацию удара
+            if (weaponAnimator != null)
+                weaponAnimator.SetTrigger("MeleeAttack");
+
             Ray ray = new Ray(playerCamera.transform.position, playerCamera.transform.forward);
             if (Physics.Raycast(ray, out RaycastHit hit, weaponData.meleeRange))
             {
@@ -75,7 +78,10 @@ public class Weapon : MonoBehaviour
             }
             currentAmmo--;
 
-            // Рандомный разброс
+            // Проигрываем анимацию выстрела
+            if (weaponAnimator != null)
+                weaponAnimator.SetTrigger("Shoot");
+
             Vector3 direction = playerCamera.transform.forward;
             direction = Quaternion.Euler(
                 Random.Range(-weaponData.spreadAngle, weaponData.spreadAngle),
@@ -98,6 +104,11 @@ public class Weapon : MonoBehaviour
     {
         isReloading = true;
         Debug.Log("Перезарядка...");
+
+        // Проигрываем анимацию перезарядки
+        if (weaponAnimator != null)
+            weaponAnimator.SetTrigger("Reload");
+
         yield return new WaitForSeconds(weaponData.reloadTime);
 
         int needed = weaponData.magazineSize - currentAmmo;
