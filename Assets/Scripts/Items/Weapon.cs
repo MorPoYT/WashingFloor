@@ -14,9 +14,6 @@ public class Weapon : MonoBehaviour
     private bool isReloading;
     private float lastFireTime;
 
-    [Header("Effects")]
-    public GameObject hitEffectPrefab;
-    public Transform muzzleTransform;
 
     private void OnEnable()
     {
@@ -59,15 +56,13 @@ public class Weapon : MonoBehaviour
 
         if (weaponData.fireMode == FireMode.Melee)
         {
+            // МЕЛИЕ
             Ray ray = new Ray(playerCamera.transform.position, playerCamera.transform.forward);
             if (Physics.Raycast(ray, out RaycastHit hit, weaponData.meleeRange))
             {
                 IDamageable dmg = hit.collider.GetComponent<IDamageable>();
                 if (dmg != null)
                     dmg.TakeDamage(weaponData.damage);
-
-                if (hitEffectPrefab)
-                    Instantiate(hitEffectPrefab, hit.point, Quaternion.LookRotation(hit.normal));
             }
             Debug.Log("Удар ближнего боя");
         }
@@ -93,17 +88,11 @@ public class Weapon : MonoBehaviour
                 IDamageable dmg = hit.collider.GetComponent<IDamageable>();
                 if (dmg != null)
                     dmg.TakeDamage(weaponData.damage);
-
-                if (hitEffectPrefab)
-                    Instantiate(hitEffectPrefab, hit.point, Quaternion.LookRotation(hit.normal));
             }
-
-            StartCoroutine(DoMuzzleKick());
 
             Debug.Log($"Выстрел из {weaponData.weaponName}");
         }
     }
-
 
     private IEnumerator Reload()
     {
@@ -121,30 +110,4 @@ public class Weapon : MonoBehaviour
 
         isReloading = false;
     }
-
-    private IEnumerator DoMuzzleKick()
-    {
-        if (muzzleTransform == null)
-            yield break;
-
-        Vector3 originalPos = muzzleTransform.localPosition;
-        Vector3 kickBackPos = originalPos + Vector3.back * 0.1f;
-
-        float t = 0;
-        while (t < 0.1f)
-        {
-            t += Time.deltaTime * 10f;
-            muzzleTransform.localPosition = Vector3.Lerp(originalPos, kickBackPos, t);
-            yield return null;
-        }
-
-        t = 0;
-        while (t < 0.1f)
-        {
-            t += Time.deltaTime * 10f;
-            muzzleTransform.localPosition = Vector3.Lerp(kickBackPos, originalPos, t);
-            yield return null;
-        }
-    }
-
 }
